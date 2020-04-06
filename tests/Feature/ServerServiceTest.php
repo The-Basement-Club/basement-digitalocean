@@ -2,23 +2,19 @@
 
 namespace Kregel\Basement\DigitalOcean\Tests\Feature;
 
-use DigitalOceanV2\Adapter\GuzzleHttpAdapter;
-use DigitalOceanV2\DigitalOceanV2;
+use Kregel\Basement\DigitalOcean\Server;
 use Kregel\Basement\DigitalOcean\ServerService;
 use Kregel\Basement\DigitalOcean\Tests\AbstractTestCase;
+use Kregel\Basement\Credential;
 
 class ServerServiceTest extends AbstractTestCase
 {
     public function testCreateServerSuccess()
     {
-        $this->assertTrue(true);
-        // Since this actually creates a DO Droplet, I'm disabling the test since automatically removing the droplets also breaks DO...
-        return;
-        $service = new ServerService(
-            new DigitalOceanV2(
-                new GuzzleHttpAdapter(getenv('TEST_DIGITAL_OCEAN_TOKEN'))
-            )
-        );
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
 
         $server = $service->createServer([
             'name' => 'test-create-success',
@@ -40,11 +36,10 @@ class ServerServiceTest extends AbstractTestCase
 
     public function testFindAllRegions()
     {
-        $service = new ServerService(
-            new DigitalOceanV2(
-                new GuzzleHttpAdapter(getenv('TEST_DIGITAL_OCEAN_TOKEN'))
-            )
-        );
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
 
         $regions = $service->findAllRegions();
         $this->assertCount(9, $regions);
@@ -52,11 +47,10 @@ class ServerServiceTest extends AbstractTestCase
 
     public function testFindAllSizes()
     {
-        $service = new ServerService(
-            new DigitalOceanV2(
-                new GuzzleHttpAdapter(getenv('TEST_DIGITAL_OCEAN_TOKEN'))
-            )
-        );
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
 
         $sizes = $service->findAllSizes();
 
@@ -65,14 +59,118 @@ class ServerServiceTest extends AbstractTestCase
 
     public function testFindAllServers()
     {
-        $service = new ServerService(
-            new DigitalOceanV2(
-                new GuzzleHttpAdapter(getenv('TEST_DIGITAL_OCEAN_TOKEN'))
-            )
-        );
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
 
         $servers = $service->findAllServers();
 
         $this->assertGreaterThan(0, $servers);
+    }
+
+    public function testPowerOffTestServer()
+    {
+        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
+        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
+        sleep(10);
+
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
+
+        $servers = $service->findAllServers();
+
+        $this->assertNotEmpty($servers);
+
+        $server = array_values(array_filter($servers, function (Server $server) {
+            return $server->name === 'test-create-success';
+        }))[0];
+
+        $this->assertNotNull($server);
+
+        $service->powerOffServer($server->id);
+    }
+
+    public function testPowerOnTestServer()
+    {
+        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
+        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
+        sleep(10);
+
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
+
+        $servers = $service->findAllServers();
+
+        $this->assertNotEmpty($servers);
+
+        $server = array_values(array_filter($servers, function (Server $server) {
+            return $server->name === 'test-create-success';
+        }))[0];
+
+        $this->assertNotNull($server);
+
+        $service->powerOnServer($server->id);
+    }
+
+    public function testShutdownTestServer()
+    {
+        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
+        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
+        sleep(10);
+
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
+
+        $servers = $service->findAllServers();
+
+        $this->assertNotEmpty($servers);
+
+        $server = array_values(array_filter($servers, function (Server $server) {
+            return $server->name === 'test-create-success';
+        }))[0];
+        $this->assertNotNull($server);
+
+        $service->shutdownServer($server->id);
+    }
+
+    public function testDeleteTestServer()
+    {
+        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
+        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
+        sleep(10);
+
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
+
+        $servers = $service->findAllServers();
+
+        $this->assertNotEmpty($servers);
+
+        $server = array_values(array_filter($servers, function (Server $server) {
+            return $server->name === 'test-create-success';
+        }))[0];
+
+        $this->assertNotEmpty($server);
+
+        $service->deleteServer($server->id);
+
+        $servers = $service->findAllServers();
+
+        $this->assertNotEmpty($servers);
+
+        $server = array_values(array_filter($servers, function (Server $server) {
+            return $server->name === 'test-create-success';
+        }))[0];
+
+        $this->assertEmpty($server);
     }
 }

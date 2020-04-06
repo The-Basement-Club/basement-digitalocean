@@ -2,8 +2,10 @@
 
 namespace Kregel\Basement\DigitalOcean;
 
+use DigitalOceanV2\Adapter\GuzzleHttpAdapter;
 use DigitalOceanV2\DigitalOceanV2;
 use DigitalOceanV2\Entity\Region;
+use Kregel\Basement\Credential;
 use Kregel\Basement\Server as BasementServer;
 use Kregel\Basement\SshKey as BasementSshKey;
 use Kregel\Basement\ServerServiceContract;
@@ -18,9 +20,11 @@ class ServerService implements ServerServiceContract
      */
     protected $digitalOcean;
 
-    public function __construct(DigitalOceanV2 $doSdk)
+    public function __construct(Credential $credential)
     {
-        $this->digitalOcean = $doSdk;
+        $this->digitalOcean = new DigitalOceanV2(
+            new GuzzleHttpAdapter($credential->access_token)
+        );
     }
 
     public function createServer(array $config): BasementServer

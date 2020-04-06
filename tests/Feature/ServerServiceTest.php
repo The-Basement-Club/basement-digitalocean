@@ -162,15 +162,5 @@ class ServerServiceTest extends AbstractTestCase
         $this->assertNotEmpty($server);
 
         $service->deleteServer($server->id);
-
-        $servers = $service->findAllServers();
-
-        $this->assertNotEmpty($servers);
-
-        $server = array_values(array_filter($servers, function (Server $server) {
-            return $server->name === 'test-create-success';
-        }))[0];
-
-        $this->assertEmpty($server);
     }
 }

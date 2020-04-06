@@ -7,8 +7,6 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-
-
 ## Install
 
 Via Composer
@@ -16,10 +14,6 @@ Via Composer
 ``` bash
 $ composer require kregel/basement-digitalocean
 ```
-
-## Change log
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Testing
 

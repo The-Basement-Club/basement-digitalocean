@@ -49,6 +49,7 @@ class ServerServiceTest extends AbstractTestCase
         $regions = $service->findAllRegions();
         $this->assertCount(9, $regions);
     }
+
     public function testFindAllSizes()
     {
         $service = new ServerService(
@@ -61,6 +62,7 @@ class ServerServiceTest extends AbstractTestCase
 
         $this->assertCount(64, $sizes);
     }
+
     public function testFindAllServers()
     {
         $service = new ServerService(

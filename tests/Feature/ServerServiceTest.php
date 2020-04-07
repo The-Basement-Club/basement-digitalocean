@@ -95,8 +95,6 @@ class ServerServiceTest extends AbstractTestCase
 
     public function testPowerOnTestServer()
     {
-        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
-        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
         sleep(10);
 
         $credential = new Credential;
@@ -119,8 +117,6 @@ class ServerServiceTest extends AbstractTestCase
 
     public function testShutdownTestServer()
     {
-        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
-        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
         sleep(10);
 
         $credential = new Credential;
@@ -140,10 +136,22 @@ class ServerServiceTest extends AbstractTestCase
         $service->shutdownServer($server->id);
     }
 
+    public function testFindAllSshkeysTestServer()
+    {
+        sleep(10);
+
+        $credential = new Credential;
+        $credential->access_token = getenv('TEST_DIGITAL_OCEAN_TOKEN');
+
+        $service = new ServerService($credential);
+
+        $servers = $service->findAllSshkeys();
+
+        $this->assertNotEmpty($servers);
+    }
+
     public function testDeleteTestServer()
     {
-        // We have to sleep a few seconds to let DO's servers to catch up. Their UI glitches if we create then delete a server too quickly...
-        // This timer _may_ need to be increased if they ever rate limit their API for this task/route...
         sleep(10);
 
         $credential = new Credential;

@@ -4,6 +4,7 @@ namespace Kregel\Basement\DigitalOcean;
 
 use DigitalOceanV2\Adapter\GuzzleHttpAdapter;
 use DigitalOceanV2\DigitalOceanV2;
+use DigitalOceanV2\Entity\Key;
 use DigitalOceanV2\Entity\Region;
 use Kregel\Basement\Credential;
 use Kregel\Basement\Server as BasementServer;
@@ -135,5 +136,14 @@ class ServerService implements ServerServiceContract
     public function rebootServer(int $identifier): void
     {
         $this->digitalOcean->droplet()->reboot($identifier);
+    }
+
+    public function findAllSshkeys(): array
+    {
+        $keys = $this->digitalOcean->key()->getAll();
+
+        return array_map(function (Key $key): SshKey {
+            return new SshKey($key->toArray());
+        }, $keys);
     }
 }

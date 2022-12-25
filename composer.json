@@ -19,13 +19,13 @@
     ],
     "require": {
         "php": ">=7.2",
-        "graham-campbell/digitalocean": "^6.0",
+        "graham-campbell/digitalocean": ">=8.4",
         "guzzlehttp/guzzle": ">=6.5",
         "kregel/basement-common": ">=0.0.7"
     },
     "require-dev": {
         "phpunit/phpunit": ">=8.0",
-        "vlucas/phpdotenv": "^4.1"
+        "vlucas/phpdotenv": ">=4.1"
     },
     "autoload": {
         "psr-4": {
